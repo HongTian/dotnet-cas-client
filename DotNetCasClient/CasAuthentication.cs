@@ -101,6 +101,7 @@ namespace DotNetCasClient
         private static bool requireCasForMissingContentTypes;
         private static string[] requireCasForContentTypes;
         private static string[] bypassCasForHandlers;
+        private static bool simulate;
 
         // Provide reliable way for arbitrary components in forms
         // authentication pipeline to access CAS principal
@@ -246,7 +247,10 @@ namespace DotNetCasClient
 
                         bypassCasForHandlers = CasClientConfig.BypassCasForHandlers;
                         configLogger.Info("bypassCasForHandlers = " + bypassCasForHandlers);
-                        
+
+                        simulate = CasClientConfig.Simulate;
+                        configLogger.Info("simulate = " + simulate);
+
                         if (!String.IsNullOrEmpty(ticketValidatorName))
                         {
                             if (String.Compare(CasClientConfiguration.CAS10_TICKET_VALIDATOR_NAME,ticketValidatorName) == 0)                            
@@ -1626,6 +1630,18 @@ namespace DotNetCasClient
             {
                 Initialize();
                 return bypassCasForHandlers;
+            }
+        }
+
+        /// <summary>
+        /// Whether start user simulation
+        /// </summary>
+        public static bool Simulate
+        {
+            get
+            {
+                Initialize();
+                return simulate;
             }
         }
 

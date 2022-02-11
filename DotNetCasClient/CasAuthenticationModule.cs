@@ -76,7 +76,7 @@ namespace DotNetCasClient
             HttpRequest request = context.Request;
 
             logger.Debug("Starting BeginRequest for " + request.RawUrl);
-            
+
             // Cleanup expired ServiceTickets in the ServiceTicketManager
             if (CasAuthentication.ServiceTicketManager != null)
             {
@@ -144,9 +144,19 @@ namespace DotNetCasClient
                 CasAuthentication.ProcessTicketValidation();
             }
 
-            logger.Debug("Starting AuthenticateRequest for " + request.RawUrl);
-            CasAuthentication.ProcessRequestAuthentication();
-            logger.Debug("Ending AuthenticateRequest for " + request.RawUrl);
+            var continueProcess = true;
+            // simulate user account
+            if (CasAuthentication.Simulate)
+            {
+                continueProcess = SimulateAuthentication.ProcessRequestAuthentication();
+            }
+
+            if (continueProcess)
+            {
+                logger.Debug("Starting AuthenticateRequest for " + request.RawUrl);
+                CasAuthentication.ProcessRequestAuthentication();
+                logger.Debug("Ending AuthenticateRequest for " + request.RawUrl);
+            }
         }
 
         /// <summary>
@@ -200,7 +210,7 @@ namespace DotNetCasClient
                     logger.Info("  Redirecting from login callback");
                     CasAuthentication.RedirectFromLoginCallback();
                 }
-                else if (RequestEvaluator.GetRequestHasGatewayParameter()) 
+                else if (RequestEvaluator.GetRequestHasGatewayParameter())
                 {
                     logger.Info("  Redirecting from failed gateway callback");
                     CasAuthentication.RedirectFromFailedGatewayCallback();
@@ -228,5 +238,5 @@ namespace DotNetCasClient
                 logger.Debug("No EndRequest processing for " + request.RawUrl);
             }
         }
-   }
+    }
 }
